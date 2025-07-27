@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12,"active":true},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="二叉树创建创建根据数组，值为0代表空节点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二叉树的创建与遍历">
+<meta property="og:url" content="http://example.com/2017/02/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%81%8D%E5%8E%86/index.html">
+<meta property="og:site_name" content="XDMrWu&#39;s Blog">
+<meta property="og:description" content="二叉树创建创建根据数组，值为0代表空节点">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-02-25T16:25:41.000Z">
+<meta property="article:modified_time" content="2025-07-26T15:58:21.810Z">
+<meta property="article:author" content="XDMrWu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2017/02/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%81%8D%E5%8E%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2017/02/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%81%8D%E5%8E%86/","path":"2017/02/26/二叉树的创建与遍历/","title":"二叉树的创建与遍历"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>二叉树的创建与遍历 | XDMrWu's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">XDMrWu's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E5%88%9B%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">二叉树创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E9%81%8D%E5%8E%86%E7%9A%84%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">二叉树的深度优先遍历的递归算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E9%81%8D%E5%8E%86%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">二叉树的深度优先遍历的非递归算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E5%BA%8F"><span class="nav-number">3.1.</span> <span class="nav-text">先序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E5%BA%8F"><span class="nav-number">3.2.</span> <span class="nav-text">后序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D-%E4%B8%AD-%E5%90%8E%E5%BA%8F%E9%9D%9E%E9%80%92%E5%BD%92%E9%81%8D%E5%8E%86%E7%9A%84%E9%80%9A%E7%94%A8%E8%A7%A3%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">前&#x2F;中&#x2F;后序非递归遍历的通用解法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88%E9%81%8D%E5%8E%86"><span class="nav-number">5.</span> <span class="nav-text">二叉树的广度优先遍历</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XDMrWu"
+      src="https://p6-passport.byteacctimg.com/img/user-avatar/3f012dbb60c7ec190f16e0546581394f~90x90.png">
+  <p class="site-author-name" itemprop="name">XDMrWu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/XDMrWu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;XDMrWu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/02/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%81%8D%E5%8E%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://p6-passport.byteacctimg.com/img/user-avatar/3f012dbb60c7ec190f16e0546581394f~90x90.png">
+      <meta itemprop="name" content="XDMrWu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XDMrWu's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="二叉树的创建与遍历 | XDMrWu's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          二叉树的创建与遍历
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-02-26 00:25:41" itemprop="dateCreated datePublished" datetime="2017-02-26T00:25:41+08:00">2017-02-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-26 23:58:21" itemprop="dateModified" datetime="2025-07-26T23:58:21+08:00">2025-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="二叉树创建"><a href="#二叉树创建" class="headerlink" title="二叉树创建"></a>二叉树创建</h2><p>创建根据数组，值为0代表空节点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> Node <span class="title function_">createTree</span><span class="params">(<span class="type">int</span>[] data, <span class="type">int</span> index)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (index &gt;= data.length || data[index] == <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>();</span><br><span class="line">	node.setValue(data[index]);</span><br><span class="line">	node.setLeftChild(createTree(data, <span class="number">2</span> * index + <span class="number">1</span>));</span><br><span class="line">	node.setRightChild(createTree(data, <span class="number">2</span> * index + <span class="number">2</span>));</span><br><span class="line">	<span class="keyword">return</span> node;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>createTree是创建以index索引代表节点为root的树，所以我们首先创建节点赋上对应值，然后设置左右子树，通过递归，最后得到二叉树。</p>
+<h2 id="二叉树的深度优先遍历的递归算法"><a href="#二叉树的深度优先遍历的递归算法" class="headerlink" title="二叉树的深度优先遍历的递归算法"></a>二叉树的深度优先遍历的递归算法</h2><p>深度优先遍历还分为先序、中序、后序。以先序为例，先序就是先访问根节点，再先序遍历左子树，然后先序遍历右子树，很明显可以递归完成。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 先序</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> root</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">preOrder</span><span class="params">(Node root)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (root != <span class="literal">null</span>) &#123;</span><br><span class="line">		System.out.println(root.getValue() + <span class="string">&quot;&quot;</span>);</span><br><span class="line">		preOrder(root.getLeftChild());</span><br><span class="line">		preOrder(root.getRightChild());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 中序</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> root</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">inOrder</span><span class="params">(Node root)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (root != <span class="literal">null</span>) &#123;</span><br><span class="line">		preOrder(root.getLeftChild());</span><br><span class="line">		System.out.println(root.getValue() + <span class="string">&quot;&quot;</span>);</span><br><span class="line">		preOrder(root.getRightChild());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 后序 </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> root</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">postOrder</span><span class="params">(Node root)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (root != <span class="literal">null</span>) &#123;</span><br><span class="line">		preOrder(root.getLeftChild());</span><br><span class="line">		preOrder(root.getRightChild());</span><br><span class="line">		System.out.println(root.getValue() + <span class="string">&quot;&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二叉树的深度优先遍历的非递归算法"><a href="#二叉树的深度优先遍历的非递归算法" class="headerlink" title="二叉树的深度优先遍历的非递归算法"></a>二叉树的深度优先遍历的非递归算法</h2><h3 id="先序"><a href="#先序" class="headerlink" title="先序"></a>先序</h3><p>非递归方法我们使用栈来实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 先序非递归</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> node</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">pre</span><span class="params">(Node node)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (node == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	ArrayDeque&lt;Node&gt; stack = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">	stack.push(node);</span><br><span class="line">	<span class="keyword">while</span> (!stack.isEmpty()) &#123;</span><br><span class="line">		<span class="type">Node</span> <span class="variable">n</span> <span class="operator">=</span> stack.pop();</span><br><span class="line">		System.out.println(n.getValue() + <span class="string">&quot;&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (n.getRightChild() != <span class="literal">null</span>) &#123;</span><br><span class="line">			stack.push(n.getRightChild());</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (n.getLeftChild() != <span class="literal">null</span>) &#123;</span><br><span class="line">			stack.push(n.getLeftChild());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先root入栈，然后循环访问栈顶元素并出栈，接下来将左右子节点入栈，入栈顺序要是先右后左。</p>
+<h3 id="后序"><a href="#后序" class="headerlink" title="后序"></a>后序</h3><p>通过观察可以发现将后序的结果反过来就相当于将二叉树所有左右子树互换后的先序遍历</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 后序非递归</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> node</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">after</span><span class="params">(Node node)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (node == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	ArrayDeque&lt;Node&gt; stack = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">	List&lt;Node&gt; result = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">	stack.push(node);</span><br><span class="line">	<span class="keyword">while</span> (!stack.isEmpty()) &#123;</span><br><span class="line">		<span class="type">Node</span> <span class="variable">n</span> <span class="operator">=</span> stack.pop();</span><br><span class="line">		<span class="comment">// 加到队列开头</span></span><br><span class="line">		result.add(<span class="number">0</span>, n.getValue());</span><br><span class="line">		<span class="keyword">if</span> (n.getLeftChild() != <span class="literal">null</span>) &#123;</span><br><span class="line">			stack.push(n.getLeftChild());</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (n.getRightChild() != <span class="literal">null</span>) &#123;</span><br><span class="line">			stack.push(n.getRightChild());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先root入栈，然后循环访问栈顶元素并出栈，接下来将左右子节点入栈，入栈顺序要是先右后左。</p>
+<h2 id="前-中-后序非递归遍历的通用解法"><a href="#前-中-后序非递归遍历的通用解法" class="headerlink" title="前&#x2F;中&#x2F;后序非递归遍历的通用解法"></a>前&#x2F;中&#x2F;后序非递归遍历的通用解法</h2><p>以后序为例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">public class Main &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public List&lt;Integer&gt; traversal(TreeNode root) &#123;</span><br><span class="line">    	// 等待访问的节点</span><br><span class="line">        Stack&lt;TreeNode&gt; toVisitStack = new Stack&lt;TreeNode&gt;();</span><br><span class="line">        // 访问节点的顺序</span><br><span class="line">        List&lt;TreeNode&gt; visitQueue = new ArrayList&lt;TreeNode&gt;();</span><br><span class="line">        List&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();</span><br><span class="line">        if (root == null) &#123;</span><br><span class="line">            return result;</span><br><span class="line">        &#125;</span><br><span class="line">        visitQueue.add(root);</span><br><span class="line">        toVisitStack.push(root);</span><br><span class="line">        while (!toVisitStack.isEmpty()) &#123;</span><br><span class="line">            TreeNode node = toVisitStack.pop();</span><br><span class="line">            visitNode(node, visitQueue, toVisitStack);</span><br><span class="line">        &#125;</span><br><span class="line">        for (TreeNode treeNode : visitQueue) &#123;</span><br><span class="line">            result.add(treeNode.val);</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 后序</span><br><span class="line">    private void visitNode(TreeNode node, List&lt;TreeNode&gt; visitQueue, Stack&lt;TreeNode&gt; toVisitStack) &#123;</span><br><span class="line">        int index = visitQueue.indexOf(node);</span><br><span class="line">        if (node.left != null) &#123;</span><br><span class="line">            visitQueue.add(index, node.left);</span><br><span class="line">            toVisitStack.push(node.left);</span><br><span class="line">        &#125;</span><br><span class="line">        index = visitQueue.indexOf(node);</span><br><span class="line">        if (node.right != null) &#123;</span><br><span class="line">            visitQueue.add(index, node.right);</span><br><span class="line">            toVisitStack.push(node.right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public class TreeNode &#123;</span><br><span class="line">      int val;</span><br><span class="line">      TreeNode left;</span><br><span class="line">      TreeNode right;</span><br><span class="line">      TreeNode(int x) &#123;</span><br><span class="line">          val = x;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>visitQueue保存的是最后所有节点的访问顺序，从index&#x3D;0开始，首先我们将root加入visitQueue和toVisitStack，随后从toVisitStack中获取visitNode，将子节点插入visitQueue，这里以后序为例，左右节点均在当前节点之前访问且左节点优先于右节点，所以在visitQueue中的当前节点位置之前插入左右节点，随后将左右节点加入toVisitStack表示后序将对左右节点进行上述操作。</p>
+<h2 id="二叉树的广度优先遍历"><a href="#二叉树的广度优先遍历" class="headerlink" title="二叉树的广度优先遍历"></a>二叉树的广度优先遍历</h2><p>我们可以通过一个队列来保存访问过的节点的左右子节点，然后删除访问过的节点，直到队列为空</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">layer</span><span class="params">(Node root)</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (root == <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	List&lt;Node&gt; nodeQueue = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;Node&gt;();</span><br><span class="line">	nodeQueue.add(root);</span><br><span class="line">	<span class="keyword">while</span> (nodeQueue.size() != <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="type">Node</span> <span class="variable">node</span> <span class="operator">=</span> nodeQueue.remove(<span class="number">0</span>);</span><br><span class="line">		System.out.println(node.getValue() + <span class="string">&quot;&quot;</span>);</span><br><span class="line">		<span class="keyword">if</span> (node.getLeftChild() != <span class="literal">null</span>) &#123;</span><br><span class="line">			nodeQueue.add(node.getLeftChild());</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> (node.getRightChild() != <span class="literal">null</span>) &#123;</span><br><span class="line">			nodeQueue.add(node.getRightChild());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="XDMrWu 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XDMrWu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2017/02/26/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E9%81%8D%E5%8E%86/" title="二叉树的创建与遍历">http://example.com/2017/02/26/二叉树的创建与遍历/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/01/13/%E4%BD%BF%E7%94%A8ItemDecoration%E6%89%93%E9%80%A0%E5%88%97%E8%A1%A8%E9%A1%B6%E9%83%A8%E6%82%AC%E6%B5%AE%E6%95%88%E6%9E%9C/" rel="prev" title="使用ItemDecoration打造列表顶部悬浮效果">
+                  <i class="fa fa-angle-left"></i> 使用ItemDecoration打造列表顶部悬浮效果
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/03/04/Java%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB%E4%BD%BF%E7%94%A8%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F/" rel="next" title="Java匿名内部类使用局部变量">
+                  Java匿名内部类使用局部变量 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">XDMrWu</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">171k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:36</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/XDMrWu" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

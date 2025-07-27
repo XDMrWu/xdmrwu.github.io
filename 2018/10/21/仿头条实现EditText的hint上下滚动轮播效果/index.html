@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12,"active":true},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="简介最近看到头条的首页顶部搜索框有一个切换hint文字的动画效果，比较好奇它是怎么实现的，经过一番探索发现这个顶部的搜索框并不是真正的搜索框，点击之后是直接跳转到搜索界面，本身并不是一个EditText。这样的实现方式让我顿时感觉索然无味，同时不禁思考，难道不能在一个EditText控件上实现这样的效果吗？百度、google了一番发现并没有找到相关的效果实现，于是决定自己撸一个。起初并没有头绪，后">
+<meta property="og:type" content="article">
+<meta property="og:title" content="仿头条实现EditText的hint上下滚动轮播效果">
+<meta property="og:url" content="http://example.com/2018/10/21/%E4%BB%BF%E5%A4%B4%E6%9D%A1%E5%AE%9E%E7%8E%B0EditText%E7%9A%84hint%E4%B8%8A%E4%B8%8B%E6%BB%9A%E5%8A%A8%E8%BD%AE%E6%92%AD%E6%95%88%E6%9E%9C/index.html">
+<meta property="og:site_name" content="XDMrWu&#39;s Blog">
+<meta property="og:description" content="简介最近看到头条的首页顶部搜索框有一个切换hint文字的动画效果，比较好奇它是怎么实现的，经过一番探索发现这个顶部的搜索框并不是真正的搜索框，点击之后是直接跳转到搜索界面，本身并不是一个EditText。这样的实现方式让我顿时感觉索然无味，同时不禁思考，难道不能在一个EditText控件上实现这样的效果吗？百度、google了一番发现并没有找到相关的效果实现，于是决定自己撸一个。起初并没有头绪，后">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/autohint1.gif">
+<meta property="og:image" content="http://example.com/images/autohint2.gif">
+<meta property="article:published_time" content="2018-10-21T14:30:53.000Z">
+<meta property="article:modified_time" content="2025-07-26T15:58:21.811Z">
+<meta property="article:author" content="XDMrWu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/autohint1.gif">
+
+
+<link rel="canonical" href="http://example.com/2018/10/21/%E4%BB%BF%E5%A4%B4%E6%9D%A1%E5%AE%9E%E7%8E%B0EditText%E7%9A%84hint%E4%B8%8A%E4%B8%8B%E6%BB%9A%E5%8A%A8%E8%BD%AE%E6%92%AD%E6%95%88%E6%9E%9C/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2018/10/21/%E4%BB%BF%E5%A4%B4%E6%9D%A1%E5%AE%9E%E7%8E%B0EditText%E7%9A%84hint%E4%B8%8A%E4%B8%8B%E6%BB%9A%E5%8A%A8%E8%BD%AE%E6%92%AD%E6%95%88%E6%9E%9C/","path":"2018/10/21/仿头条实现EditText的hint上下滚动轮播效果/","title":"仿头条实现EditText的hint上下滚动轮播效果"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>仿头条实现EditText的hint上下滚动轮播效果 | XDMrWu's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">XDMrWu's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">原理介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0AutoHintLayout"><span class="nav-number">3.</span> <span class="nav-text">实现AutoHintLayout</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0AutoHintLayout-1"><span class="nav-number">3.0.1.</span> <span class="nav-text">实现AutoHintLayout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0AutoHintHelper"><span class="nav-number">3.0.2.</span> <span class="nav-text">实现AutoHintHelper</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%A9%E5%B1%95"><span class="nav-number">4.</span> <span class="nav-text">扩展</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XDMrWu"
+      src="https://p6-passport.byteacctimg.com/img/user-avatar/3f012dbb60c7ec190f16e0546581394f~90x90.png">
+  <p class="site-author-name" itemprop="name">XDMrWu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/XDMrWu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;XDMrWu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/21/%E4%BB%BF%E5%A4%B4%E6%9D%A1%E5%AE%9E%E7%8E%B0EditText%E7%9A%84hint%E4%B8%8A%E4%B8%8B%E6%BB%9A%E5%8A%A8%E8%BD%AE%E6%92%AD%E6%95%88%E6%9E%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://p6-passport.byteacctimg.com/img/user-avatar/3f012dbb60c7ec190f16e0546581394f~90x90.png">
+      <meta itemprop="name" content="XDMrWu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XDMrWu's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="仿头条实现EditText的hint上下滚动轮播效果 | XDMrWu's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          仿头条实现EditText的hint上下滚动轮播效果
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-10-21 22:30:53" itemprop="dateCreated datePublished" datetime="2018-10-21T22:30:53+08:00">2018-10-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-26 23:58:21" itemprop="dateModified" datetime="2025-07-26T23:58:21+08:00">2025-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6/" itemprop="url" rel="index"><span itemprop="name">Android自定义控件</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>8.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>最近看到头条的首页顶部搜索框有一个切换hint文字的动画效果，比较好奇它是怎么实现的，经过一番探索发现这个顶部的搜索框并不是真正的搜索框，点击之后是直接跳转到搜索界面，本身并不是一个EditText。这样的实现方式让我顿时感觉索然无味，同时不禁思考，难道不能在一个EditText控件上实现这样的效果吗？百度、google了一番发现并没有找到相关的效果实现，于是决定自己撸一个。起初并没有头绪，后来想起来google官方出的TextInputLayout好像有涉及到EditText的hint动画效果，就研究了一番TextInputLayout的源码，并参考源码实现本文的hint轮播效果。头条与本文实现的效果如下图<br><img src="/images/autohint1.gif" alt="在这里插入图片描述"><br><img src="/images/autohint2.gif" alt="在这里插入图片描述"></p>
+<h1 id="原理介绍"><a href="#原理介绍" class="headerlink" title="原理介绍"></a>原理介绍</h1><p>通过阅读TextInputLayout的源码发现hint的绘制其实不是EditText绘制的，而是TextInpuLayout来进行绘制，它通过获得子控件EditText的hint绘制区域，来自己完成hint相关的绘制与动画操作，而EditText是不设置hint的。有了这个思路，我们就可以开发本文要介绍的控件AutoHintLayout。</p>
+<h1 id="实现AutoHintLayout"><a href="#实现AutoHintLayout" class="headerlink" title="实现AutoHintLayout"></a>实现AutoHintLayout</h1><p>AutoHintLayout继承自LinearLayout，它需要至少有一个EditText子View，且对外提供一个设置hint的方法来设置hint值并实现切换的动画效果，动画相关的效果我们通过一个AutoHintHelper来集中处理，这样可以避免AutoHintLayout内堆砌太多逻辑。首先我们先定义AutoHintHelper对外提供的方法，具体实现后面详解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> wulinpeng</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AutoHintHelper</span> &#123;</span><br><span class="line">	<span class="comment">// AutoHintLayout，用于调用AutoHintLayout的invalidate方法触发刷新布局</span></span><br><span class="line">    <span class="keyword">private</span> View mView;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 绘制hint的区域</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">Rect</span> <span class="variable">mHintBounds</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Rect</span>();</span><br><span class="line">    <span class="comment">// 上一个hintText</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">String</span> <span class="variable">mLastHintText</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="comment">// 当前要绘制的hintText</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">String</span> <span class="variable">mHintText</span> <span class="operator">=</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">float</span> <span class="variable">mHintTextSize</span> <span class="operator">=</span> <span class="number">15</span>;</span><br><span class="line">    <span class="keyword">private</span> ColorStateList mHintTextColor;</span><br><span class="line">    <span class="keyword">private</span> Typeface mTypeFace;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="variable">mGravity</span> <span class="operator">=</span> Gravity.CENTER_VERTICAL;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span>[] state;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">Paint</span> <span class="variable">mPaint</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Paint</span>();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AutoHintHelper</span><span class="params">(View mView)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.mView = mView;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHintText</span><span class="params">(String text, <span class="type">boolean</span> anim)</span> &#123;</span><br><span class="line">    	...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHintTextSize</span><span class="params">(<span class="type">float</span> mHintTextSize)</span> &#123;</span><br><span class="line">    	...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHintTextColor</span><span class="params">(ColorStateList mHintTextColor)</span> &#123;</span><br><span class="line">    	...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setTypeFace</span><span class="params">(Typeface mTypeFace)</span> &#123;</span><br><span class="line">    	....</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setState</span><span class="params">(<span class="type">int</span>[] state)</span> &#123;</span><br><span class="line">    	....</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setGravity</span><span class="params">(<span class="type">int</span> mGravity)</span> &#123;</span><br><span class="line">    	....</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setHintBounds</span><span class="params">(<span class="type">int</span> left, <span class="type">int</span> top, <span class="type">int</span> right, <span class="type">int</span> bottom)</span> &#123;</span><br><span class="line">    	....</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">showHint</span><span class="params">(<span class="type">boolean</span> showHint)</span> &#123;</span><br><span class="line">    	....</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * AutoHintLayout触发draw方法的时候调用此方法来绘制</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">draw</span><span class="params">(Canvas canvas)</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="实现AutoHintLayout-1"><a href="#实现AutoHintLayout-1" class="headerlink" title="实现AutoHintLayout"></a>实现AutoHintLayout</h3><p>首先我们要获得EditText绘制hint的相关属性，如颜色、字体、字体大小、Gravity等，在AutoHintLayout的addView方法中我们可以获取到EditText，并将对应的属性设置给AutoHintHelper，实现如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addView</span><span class="params">(View child, <span class="type">int</span> index, ViewGroup.LayoutParams params)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.addView(child, index, params);</span><br><span class="line">    <span class="keyword">if</span> (child <span class="keyword">instanceof</span> EditText) &#123;</span><br><span class="line">        setEditText((EditText) child);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">setEditText</span><span class="params">(EditText editText)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.mEditText = editText;</span><br><span class="line">    mAutoHintHelper.setHintTextColor(mEditText.getHintTextColors());</span><br><span class="line">    mAutoHintHelper.setHintTextSize(mEditText.getTextSize());</span><br><span class="line">    mAutoHintHelper.setTypeFace(mEditText.getTypeface());</span><br><span class="line">    mAutoHintHelper.setGravity(mEditText.getGravity());</span><br><span class="line"></span><br><span class="line">    mEditText.addTextChangedListener(<span class="keyword">new</span> <span class="title class_">TextWatcher</span>() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">beforeTextChanged</span><span class="params">(CharSequence s, <span class="type">int</span> start, <span class="type">int</span> count, <span class="type">int</span> after)</span> &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onTextChanged</span><span class="params">(CharSequence s, <span class="type">int</span> start, <span class="type">int</span> before, <span class="type">int</span> count)</span> &#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterTextChanged</span><span class="params">(Editable s)</span> &#123;</span><br><span class="line">            <span class="comment">// 输入字符变化的时候判断是否需要显示hint</span></span><br><span class="line">            <span class="keyword">if</span> (TextUtils.isEmpty(mEditText.getText().toString())) &#123;</span><br><span class="line">                mAutoHintHelper.showHint(<span class="literal">true</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                mAutoHintHelper.showHint(<span class="literal">false</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同时我们也给EditText设置了textChanged监听，在EditText输入字符的时候设置不显示hint，反之显示hint。然后我们需要在onLayout方法中给AutoHintHelper设置hint的绘制区域</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onLayout</span><span class="params">(<span class="type">boolean</span> changed, <span class="type">int</span> l, <span class="type">int</span> t, <span class="type">int</span> r, <span class="type">int</span> b)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.onLayout(changed, l, t, r, b);</span><br><span class="line">    <span class="keyword">if</span> (mEditText != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="type">Rect</span> <span class="variable">rect</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Rect</span>();</span><br><span class="line">        <span class="comment">// 获取EditText在本View中的位置</span></span><br><span class="line">        setChildRect(mEditText, rect);</span><br><span class="line"></span><br><span class="line">        l = rect.left + mEditText.getCompoundPaddingLeft();</span><br><span class="line">        r = rect.right - mEditText.getCompoundPaddingRight();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 提供AutoHintHelper hint的绘制区域</span></span><br><span class="line">        mAutoHintHelper.setHintBounds(</span><br><span class="line">                l, rect.top + mEditText.getCompoundPaddingTop(),</span><br><span class="line">                r, rect.bottom - mEditText.getCompoundPaddingBottom());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setChildRect</span><span class="params">(View child, Rect out)</span> &#123;</span><br><span class="line">    out.set(<span class="number">0</span>, <span class="number">0</span>, child.getWidth(), child.getHeight());</span><br><span class="line">    <span class="comment">// 添加child在本布局中的offset到rect</span></span><br><span class="line">    offsetDescendantRectToMyCoords(child, out);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中setChildRect方法是获取到EditText在AutoHintlayout中的位置，然后加上四边的padding就可以了。<br>最后只要在draw方法中调用AutoHintHelper的draw方法将绘制逻辑交给AutoHintHelper就可以了，当然还需要对外提供一个setHint方法，实现如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">draw</span><span class="params">(Canvas canvas)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.draw(canvas);</span><br><span class="line">    mAutoHintHelper.draw(canvas);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHint</span><span class="params">(String text, <span class="type">boolean</span> anim)</span> &#123;</span><br><span class="line">    mAutoHintHelper.setHintText(text, anim);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="实现AutoHintHelper"><a href="#实现AutoHintHelper" class="headerlink" title="实现AutoHintHelper"></a>实现AutoHintHelper</h3><p>主要的动画、绘制逻辑都由这个类实现，首先我们需要确定绘制hint的x和y坐标。EditText的Gravity不同和hint的长度不同会导致绘制hint的x、y坐标不一样（注意这里计算的x、y坐标指的是EditText正常显示hint的坐标，具体动画过程中的y偏移量在draw方法里添加），实现如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 上一个hint的绘制x坐标</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">float</span> mLastDrawX;</span><br><span class="line"><span class="comment">// 当前hint的绘制x坐标</span></span><br><span class="line">   <span class="keyword">private</span> <span class="type">float</span> mDrawX;</span><br><span class="line">   <span class="comment">// hint的绘制y坐标(上一个和当前的都一样，具体的偏移在ondraw里面计算)</span></span><br><span class="line">   <span class="keyword">private</span> <span class="type">float</span> mDrawY;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 根据gravity和paint的参数计算lastHint和当前hint的drawX以及drawY</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">calculateDrawXY</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">       <span class="type">float</span> <span class="variable">lastHintLength</span> <span class="operator">=</span> mPaint.measureText(mLastHintText, <span class="number">0</span>, mLastHintText.length());</span><br><span class="line">       <span class="type">float</span> <span class="variable">hintLength</span> <span class="operator">=</span> mPaint.measureText(mHintText, <span class="number">0</span>, mHintText.length());</span><br><span class="line">       <span class="comment">// 计算x值</span></span><br><span class="line">       <span class="keyword">switch</span> (mGravity &amp; GravityCompat.RELATIVE_HORIZONTAL_GRAVITY_MASK) &#123;</span><br><span class="line">           <span class="keyword">case</span> Gravity.CENTER_HORIZONTAL:</span><br><span class="line">               mLastDrawX = mHintBounds.centerX() - (lastHintLength / <span class="number">2</span>);</span><br><span class="line">               mDrawX = mHintBounds.centerX() - (hintLength / <span class="number">2</span>);</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Gravity.RIGHT:</span><br><span class="line">               mLastDrawX = mHintBounds.right - lastHintLength;</span><br><span class="line">               mDrawX = mHintBounds.right - hintLength;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Gravity.LEFT:</span><br><span class="line">           <span class="keyword">default</span>:</span><br><span class="line">               mLastDrawX = mDrawX = mHintBounds.left;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// 计算y值</span></span><br><span class="line">       <span class="keyword">switch</span> (mGravity &amp; Gravity.VERTICAL_GRAVITY_MASK) &#123;</span><br><span class="line">           <span class="keyword">case</span> Gravity.BOTTOM:</span><br><span class="line">               mDrawY = mHintBounds.bottom;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Gravity.TOP:</span><br><span class="line">               mDrawY = mHintBounds.top - mPaint.ascent();</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Gravity.CENTER_VERTICAL:</span><br><span class="line">           <span class="keyword">default</span>:</span><br><span class="line">               <span class="type">float</span> <span class="variable">textHeight</span> <span class="operator">=</span> mPaint.descent() - mPaint.ascent();</span><br><span class="line">               <span class="type">float</span> <span class="variable">textOffset</span> <span class="operator">=</span> (textHeight / <span class="number">2</span>) - mPaint.descent();</span><br><span class="line">               mDrawY = mHintBounds.centerY() + textOffset;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>然后就是设置一些绘制属性的方法了，每一次更改属性都需要重新计算一遍绘制的坐标</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHintTextSize</span><span class="params">(<span class="type">float</span> mHintTextSize)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.mHintTextSize = mHintTextSize;</span><br><span class="line">    mPaint.setTextSize(mHintTextSize);</span><br><span class="line">    calculateDrawXY();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHintTextColor</span><span class="params">(ColorStateList mHintTextColor)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.mHintTextColor = mHintTextColor;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setTypeFace</span><span class="params">(Typeface mTypeFace)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.mTypeFace = mTypeFace;</span><br><span class="line">    mPaint.setTypeface(mTypeFace);</span><br><span class="line">    calculateDrawXY();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setState</span><span class="params">(<span class="type">int</span>[] state)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.state = state;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setGravity</span><span class="params">(<span class="type">int</span> mGravity)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.mGravity = mGravity;</span><br><span class="line">    calculateDrawXY();</span><br><span class="line">    mView.invalidate();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">setHintBounds</span><span class="params">(<span class="type">int</span> left, <span class="type">int</span> top, <span class="type">int</span> right, <span class="type">int</span> bottom)</span> &#123;</span><br><span class="line">    Log.d(<span class="string">&quot;Debug&quot;</span>, <span class="string">&quot;set bounds:&quot;</span> + left + <span class="string">&quot; &quot;</span> + top + <span class="string">&quot; &quot;</span> + right + <span class="string">&quot; &quot;</span> + bottom);</span><br><span class="line">    <span class="keyword">if</span> (!rectEquals(mHintBounds, left, top, right, bottom)) &#123;</span><br><span class="line">        mHintBounds.set(left, top, right, bottom);</span><br><span class="line">        onBoundsChanged();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">onBoundsChanged</span><span class="params">()</span> &#123;</span><br><span class="line">    calculateDrawXY();</span><br><span class="line">    mView.invalidate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来实现setHintText方法，每次外部调用这个方法首先更新hint和lastHint的值，然后开启一个ValueAnimator来开始动画，通过调用mView的invalidate方法触发draw方法绘制当前的hint</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ValueAnimator mAnimator;</span><br><span class="line">   <span class="keyword">private</span> <span class="type">float</span> <span class="variable">mCurrentFraction</span> <span class="operator">=</span> <span class="number">0f</span>;</span><br><span class="line">   <span class="keyword">private</span> <span class="type">boolean</span> <span class="variable">mShowHint</span> <span class="operator">=</span> <span class="literal">true</span>;</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">initAnim</span><span class="params">()</span> &#123;</span><br><span class="line">       mAnimator = <span class="keyword">new</span> <span class="title class_">ValueAnimator</span>();</span><br><span class="line">       mAnimator.setDuration(<span class="number">300</span>);</span><br><span class="line">       mAnimator.setFloatValues(<span class="number">0f</span>, <span class="number">1f</span>);</span><br><span class="line">       mAnimator.addUpdateListener(<span class="keyword">new</span> <span class="title class_">ValueAnimator</span>.AnimatorUpdateListener() &#123;</span><br><span class="line">           <span class="meta">@Override</span></span><br><span class="line">           <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onAnimationUpdate</span><span class="params">(ValueAnimator animation)</span> &#123;</span><br><span class="line">               mCurrentFraction = animation.getAnimatedFraction();</span><br><span class="line">               mView.invalidate();</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setHintText</span><span class="params">(String text, <span class="type">boolean</span> anim)</span> &#123;</span><br><span class="line">       mLastHintText = mHintText;</span><br><span class="line">       mHintText = text;</span><br><span class="line">       <span class="keyword">if</span> (mAnimator.isRunning()) &#123;</span><br><span class="line">           mAnimator.cancel();</span><br><span class="line">       &#125;</span><br><span class="line">       calculateDrawXY();</span><br><span class="line">       <span class="keyword">if</span> (anim) &#123;</span><br><span class="line">           mCurrentFraction = <span class="number">0f</span>;</span><br><span class="line">           mAnimator.start();</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           mCurrentFraction = <span class="number">1f</span>;</span><br><span class="line">           mView.invalidate();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">showHint</span><span class="params">(<span class="type">boolean</span> showHint)</span> &#123;</span><br><span class="line">       mShowHint = showHint;</span><br><span class="line">       mView.invalidate();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>首先需要将运行中的动画取消，然后重新计算绘制坐标，如果不需要动画则直接设置mCurrentFraction为1，draw的时候将直接绘制当前的hint，不做任何动画，反之开启动画。<br>最后实现最关键的draw方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">draw</span><span class="params">(Canvas canvas)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!mShowHint) &#123;</span><br><span class="line">        <span class="comment">// draw empty</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mPaint.setColor(state == <span class="literal">null</span>? mHintTextColor.getDefaultColor(): mHintTextColor.getColorForState(state, <span class="number">0</span>));</span><br><span class="line">    <span class="type">float</span> <span class="variable">boundsHeight</span> <span class="operator">=</span> mHintBounds.bottom - mHintBounds.top;</span><br><span class="line">    <span class="type">float</span> <span class="variable">offsetY</span> <span class="operator">=</span> boundsHeight * mCurrentFraction;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// draw last hint with curr fraction</span></span><br><span class="line">    canvas.drawText(mLastHintText, <span class="number">0</span>, mLastHintText.length(), mLastDrawX, mDrawY - offsetY, mPaint);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// draw curr hint with curr fraction</span></span><br><span class="line">    canvas.drawText(mHintText, <span class="number">0</span>, mHintText.length(), mDrawX, boundsHeight + mDrawY - offsetY, mPaint);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先通过mCurrentFraction计算出当前的y偏移值，也就是lastHint应该向上滚动的距离，绘制lastHint的时候将mDrawY减去offset就可以了。绘制当前hint的时候需要在lastHint的基础上加上boundsHeight，也就是说新的hint在老的hint下方boundsHeight距离，boundsHeight就是绘制hint区域的高度。</p>
+<h1 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h1><p>到此就基本实现了hint滚动播放的效果，但是仔细想想，hint的动画只会有这么一种吗？如果我需要别的动画效果呢？我是不是需要重新写对应的XXHintLayout类？这里就要考虑到扩展性，无论什么动画，只要我们提供hint绘制区域、绘制的paint、动画播放进度等信息就可以实现，所以这里抽象出一个接口IAutoHintDrawer来实现具体的绘制方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> wulinpeng</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: hint动画的具体绘制</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">IAutoHintDrawer</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">draw</span><span class="params">(Rect drawBounds, <span class="type">float</span> lastDrawX, <span class="type">float</span> drawX, <span class="type">float</span> drawY, <span class="type">float</span> fraction, String lastHint, String currHint, Canvas canvas, Paint paint)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后在AutoHintHelper的draw方法中调用IAutoHintDrawer的draw方法来实现，而IAutoHintDrawer的实例由具体的业务方实现然后传入，具体的实现就不赘述了，本项目的代码已经上传到<a target="_blank" rel="noopener" href="https://github.com/1014277960/AutoHintLayout">Github</a>，欢迎交流。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="XDMrWu 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XDMrWu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2018/10/21/%E4%BB%BF%E5%A4%B4%E6%9D%A1%E5%AE%9E%E7%8E%B0EditText%E7%9A%84hint%E4%B8%8A%E4%B8%8B%E6%BB%9A%E5%8A%A8%E8%BD%AE%E6%92%AD%E6%95%88%E6%9E%9C/" title="仿头条实现EditText的hint上下滚动轮播效果">http://example.com/2018/10/21/仿头条实现EditText的hint上下滚动轮播效果/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/23/%E4%B8%BARecyclerView%E6%B7%BB%E5%8A%A0loadmore%E5%8A%9F%E8%83%BD/" rel="prev" title="为RecyclerView添加load more功能">
+                  <i class="fa fa-angle-left"></i> 为RecyclerView添加load more功能
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/11/11/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="next" title="代理模式">
+                  代理模式 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">XDMrWu</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">171k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:36</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/XDMrWu" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

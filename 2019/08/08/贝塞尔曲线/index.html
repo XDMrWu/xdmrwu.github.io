@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12,"active":true},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="贝塞尔原理贝塞尔曲线(Bézier curve)，又称贝兹曲线，是应用于二维图形应用程序的数学曲线，贝塞尔曲线的运用十分广泛，可以说贝塞尔曲线奠定了计算机绘图的基础(因为它可以将任何复杂的图形用精确的数学语言进行描述)，接下来以二阶贝塞尔曲线为例介绍贝塞尔曲线的定义、性质。二阶曲线由两个数据点(P0 和 P2)，一个控制点(P1)来描述曲线状态，如图所示红色曲线就是二阶贝塞尔曲线推导过程如下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="贝塞尔曲线">
+<meta property="og:url" content="http://example.com/2019/08/08/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/index.html">
+<meta property="og:site_name" content="XDMrWu&#39;s Blog">
+<meta property="og:description" content="贝塞尔原理贝塞尔曲线(Bézier curve)，又称贝兹曲线，是应用于二维图形应用程序的数学曲线，贝塞尔曲线的运用十分广泛，可以说贝塞尔曲线奠定了计算机绘图的基础(因为它可以将任何复杂的图形用精确的数学语言进行描述)，接下来以二阶贝塞尔曲线为例介绍贝塞尔曲线的定义、性质。二阶曲线由两个数据点(P0 和 P2)，一个控制点(P1)来描述曲线状态，如图所示红色曲线就是二阶贝塞尔曲线推导过程如下">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/bezier1.gif">
+<meta property="og:image" content="http://example.com/images/bezier2.png">
+<meta property="og:image" content="http://example.com/images/bezier3.png">
+<meta property="og:image" content="http://example.com/images/bezier4.gif">
+<meta property="og:image" content="http://example.com/images/bezier5.png">
+<meta property="og:image" content="http://example.com/images/bezier6.gif">
+<meta property="og:image" content="http://example.com/images/bezier7.png">
+<meta property="og:image" content="http://example.com/images/bezier8.gif">
+<meta property="og:image" content="http://example.com/images/bezier9.png">
+<meta property="og:image" content="http://example.com/images/bezier10.png">
+<meta property="og:image" content="http://example.com/images/bezier11.gif">
+<meta property="og:image" content="http://example.com/images/bezier12.png">
+<meta property="og:image" content="http://example.com/images/bezier13.png">
+<meta property="og:image" content="http://example.com/images/bezier14.png">
+<meta property="og:image" content="http://example.com/images/bezier15.png">
+<meta property="og:image" content="http://example.com/images/bezier16.png">
+<meta property="article:published_time" content="2019-08-08T13:27:00.000Z">
+<meta property="article:modified_time" content="2025-07-26T15:58:21.816Z">
+<meta property="article:author" content="XDMrWu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/bezier1.gif">
+
+
+<link rel="canonical" href="http://example.com/2019/08/08/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2019/08/08/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/","path":"2019/08/08/贝塞尔曲线/","title":"贝塞尔曲线"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>贝塞尔曲线 | XDMrWu's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">XDMrWu's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9D%E5%A1%9E%E5%B0%94%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">贝塞尔原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%B8%80-%E5%AE%9E%E7%8E%B0%E7%B2%98%E6%80%A7%E6%95%88%E6%9E%9C"><span class="nav-number">2.</span> <span class="nav-text">应用一:实现粘性效果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%BA%8C-%E5%B9%B3%E6%BB%91%E6%8B%9F%E5%90%88%E6%9B%B2%E7%BA%BF"><span class="nav-number">3.</span> <span class="nav-text">应用二:平滑拟合曲线</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E4%B8%89-%E5%B0%8F%E8%AF%B4%E4%BB%BF%E7%9C%9F%E7%BF%BB%E9%A1%B5%E6%95%88%E6%9E%9C"><span class="nav-number">4.</span> <span class="nav-text">应用三:小说仿真翻页效果</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90"><span class="nav-number">4.1.</span> <span class="nav-text">原理解析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.2.</span> <span class="nav-text">代码实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="XDMrWu"
+      src="https://p6-passport.byteacctimg.com/img/user-avatar/3f012dbb60c7ec190f16e0546581394f~90x90.png">
+  <p class="site-author-name" itemprop="name">XDMrWu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/XDMrWu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;XDMrWu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/08/08/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://p6-passport.byteacctimg.com/img/user-avatar/3f012dbb60c7ec190f16e0546581394f~90x90.png">
+      <meta itemprop="name" content="XDMrWu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XDMrWu's Blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="贝塞尔曲线 | XDMrWu's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          贝塞尔曲线
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-08 21:27:00" itemprop="dateCreated datePublished" datetime="2019-08-08T21:27:00+08:00">2019-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-26 23:58:21" itemprop="dateModified" datetime="2025-07-26T23:58:21+08:00">2025-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%B4%9D%E5%A1%9E%E5%B0%94/" itemprop="url" rel="index"><span itemprop="name">贝塞尔</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="贝塞尔原理"><a href="#贝塞尔原理" class="headerlink" title="贝塞尔原理"></a>贝塞尔原理</h1><p>贝塞尔曲线(Bézier curve)，又称贝兹曲线，是应用于二维图形应用程序的数学曲线，贝塞尔曲线的运用十分广泛，可以说贝塞尔曲线奠定了计算机绘图的基础(因为它可以将任何复杂的图形用精确的数学语言进行描述)，接下来以二阶贝塞尔曲线为例介绍贝塞尔曲线的定义、性质。<br>二阶曲线由两个数据点(P0 和 P2)，一个控制点(P1)来描述曲线状态，如图所示红色曲线就是二阶贝塞尔曲线<br><img src="/images/bezier1.gif"><br>推导过程如下<br><img src="/images/bezier2.png"></p>
+<ol>
+<li>在P0P1、P1P2上分别取点A、B满足</li>
+</ol>
+<ul>
+<li>P0A&#x2F;P0P1 &#x3D; P1B&#x2F;P1P2 &#x3D; t</li>
+</ul>
+<ol start="2">
+<li>在AB上取点C满足</li>
+</ol>
+<ul>
+<li>AC&#x2F;AB &#x3D; t<br>C为贝塞尔曲线上一个点，当t从0-1变化时，所有满足条件的点C构成完整的贝塞尔曲线，公式为<br><img src="/images/bezier3.png"><br>二阶贝塞尔曲线有两个特性:</li>
+</ul>
+<ol>
+<li>以P0P2为底边，二阶贝塞尔曲线最高点的坐标为P1P3的中点，其中P3为P0P2的中点。</li>
+<li>贝塞尔曲线与P0P1、P1P2分别相切于P0、P2点</li>
+</ol>
+<p>三阶贝塞尔曲线如下如所示，构造过程和二阶类似<br><img src="/images/bezier4.gif"><br><img src="/images/bezier5.png"></p>
+<h1 id="应用一-实现粘性效果"><a href="#应用一-实现粘性效果" class="headerlink" title="应用一:实现粘性效果"></a>应用一:实现粘性效果</h1><p>使用贝塞尔曲线可以实现很多复杂的动画效果，这里介绍一种较为简单的小球粘性下拉动画，效果如下<br><img src="/images/bezier6.gif"><br>首先我们定义小球可以下拉的最大高度为MAX_HEIGHT，当小球随手势向下拉动的时候通过当前的高度&#x2F;MAX_HEIGHT计算出当前的进度progress，后面就通过progress来确定绘制所需要的所有点<br><img src="/images/bezier7.png"><br>如图所示在圆上取点e1，e1与圆心连城的直线与垂线夹角为θ。过e1做圆的切线交基准线L于c1点，取基准线上s1点和e1为数据点，c1为控制点做二阶贝塞尔曲线(右侧类似)即可实现粘性效果。其中随着progress从0到1变化过程中</p>
+<ul>
+<li>θ从0到105度变化</li>
+<li>s1从最左侧到距离O点120距离移动<br>以下是添加辅助点后的效果<br><img src="/images/bezier8.gif"></li>
+</ul>
+<h1 id="应用二-平滑拟合曲线"><a href="#应用二-平滑拟合曲线" class="headerlink" title="应用二:平滑拟合曲线"></a>应用二:平滑拟合曲线</h1><p>在一些绘图应用上会提供用户手动绘制的功能，绘制的曲线其实是一个一个点连接而成的，这样就会导致曲线可能并不光滑，出现很多折角，这种情况就可以用贝塞尔曲线进行拟合，拟合方法如下：<br><img src="/images/bezier9.png"><br>假设绘制路径上有三个连续的点a、b、c，则分别取ab、bc中点A、B，以AB为数据点，b为控制点绘制二阶贝塞尔曲线。<br>使用如上方法就可以实现平滑曲线绘制，部分代码如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * author：wulinpeng</span></span><br><span class="line"><span class="comment"> * date：2019/5/27 22:26</span></span><br><span class="line"><span class="comment"> * desc: 平滑绘制Path，将lineTo通过二阶贝塞尔转换</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SmoothCurvePath</span>: Path() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">val</span> <span class="variable">points</span> <span class="operator">=</span> mutableListOf&lt;PointF&gt;()</span><br><span class="line"></span><br><span class="line">    override fun <span class="title function_">moveTo</span><span class="params">(x: Float, y: Float)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.moveTo(x, y)</span><br><span class="line">        points.add(PointF(x, y))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun <span class="title function_">lineTo</span><span class="params">(x: Float, y: Float)</span> &#123;</span><br><span class="line">        points.add(PointF(x, y))</span><br><span class="line">        makeBezier()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> fun <span class="title function_">makeBezier</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">val</span> <span class="variable">size</span> <span class="operator">=</span> points.size</span><br><span class="line">        <span class="type">val</span> <span class="variable">prePoint</span> <span class="operator">=</span> points[size - <span class="number">2</span>]</span><br><span class="line">        <span class="type">val</span> <span class="variable">curPoint</span> <span class="operator">=</span> points[size - <span class="number">1</span>]</span><br><span class="line">        quadTo(prePoint.x, prePoint.y, (prePoint.x + curPoint.x) / <span class="number">2</span>, (prePoint.y + curPoint.y) / <span class="number">2</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    override fun <span class="title function_">reset</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>.reset()</span><br><span class="line">        points.clear()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>效果如下<br><img src="/images/bezier10.png"></p>
+<h1 id="应用三-小说仿真翻页效果"><a href="#应用三-小说仿真翻页效果" class="headerlink" title="应用三:小说仿真翻页效果"></a>应用三:小说仿真翻页效果</h1><p>目前市面上的小说阅读app基本都提供仿真翻页阅读的功能，本节将详细介绍实现的细节，demo效果如下<br><img src="/images/bezier11.gif"></p>
+<h2 id="原理解析"><a href="#原理解析" class="headerlink" title="原理解析"></a>原理解析</h2><p>本节着重讲解实现翻页效果的理论知识，下面这张图是整个翻页效果的精髓所在，接下来以从右下角开始翻页为例进行讲解。<br><img src="/images/bezier12.png" alt="图1"><br><img src="/images/bezier13.png" alt="图2"><br><img src="/images/bezier14.png" alt="图3"></p>
+<p>如图2所示，黄色区域为当前页面的背面，蓝色区域为下一页的内容，绿色为当前页面，我们第一步要做的就是确定三块区域对应的Path，这样后面才可以在Canvas上绘制对应的内容。<br>如图3所示，三角形aeh与三角形feh关于eh对称，aeh也就是我们翻页的部分，但是如果就按照这样来绘制显得不够逼真，没有真实翻页的效果，所以我们需要给翻页部分做一个平滑过渡的效果。经过ag中点做直线cj牌型与eh，交与三角形aeh于b、k点，且c、j为边界上的点。以cb为二阶贝塞尔曲线数据点，e为控制点做贝塞尔曲线，由贝塞尔性质可知该曲线与ce、ab相切，可以达到平滑过渡的效果。同理以ja为二阶贝塞尔曲线数据点，h为控制点做贝塞尔曲线平滑多度ih、ak。分别取两条贝塞尔曲线的定点d、i连接，则d、b、a、k、i5个点连接的区域为图2黄色区域，也就是当前页背页的区域。有了黄色区域的范围，就可以很简单的求得蓝色区域和绿色区域的范围了。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>实现整体的效果非常复杂，本节重点讲解几个比较关键的点，首先将图3中的点命名</p>
+<ul>
+<li>a -&gt; mTouch</li>
+<li>f -&gt; mCorner</li>
+<li>b&#x2F;c&#x2F;d&#x2F;e -&gt; mBzEnd1&#x2F;mBzStart1&#x2F;mBzVertex1&#x2F;mBzControl1</li>
+<li>h&#x2F;i&#x2F;j&#x2F;k -&gt; mBzControl2&#x2F;mBzVertex2&#x2F;mBzStart2&#x2F;mBzEnd2<br>1.mTouch点的确定<br>由于在实际触摸中会出现控制点超出屏幕的情况，所以这时候不能将触摸点当作mTouch的坐标，而是应该进行转换。转换原理是将超出屏幕的控制点缩小到屏幕的临界点(刚好不超出屏幕)，计算该缩放的比例，将触摸点按该比例向mCorner点缩小。<br>2.获得黄色区域Path<br>由于d-&gt;b &#x2F; i-&gt;k的曲线为贝塞尔曲线的一部分，我们无法直接通过Path来构造，只能通别的方式来获得到。第一步我们先获取黄色和蓝色区域的并集Path1，这一块没有什么难度，其中quadTo是连接二阶贝塞尔曲线</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">val</span> <span class="variable">path1</span> <span class="operator">=</span> Path().apply &#123;</span><br><span class="line">    moveTo(mBzStart1.x, mBzStart1.y)</span><br><span class="line">    quadTo(mBzControl1.x, mBzControl1.y, mBzEnd1.x, mBzEnd1.y)</span><br><span class="line">    lineTo(mTouch.x, mTouch.y)</span><br><span class="line">    lineTo(mBzEnd2.x, mBzEnd2.y)</span><br><span class="line">    quadTo(mBzControl2.x, mBzControl2.y, mBzStart2.x, mBzStart2.y)</span><br><span class="line">    lineTo(mCornerX, mCornerY)</span><br><span class="line">    close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二步将dbaki通过线段连接得到Path2</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">val</span> <span class="variable">path2</span> <span class="operator">=</span> Path().apply &#123;</span><br><span class="line">    moveTo(mBzVertex1.x, mBzVertex1.y)</span><br><span class="line">    lineTo(mBzVertex2.x, mBzVertex2.y)</span><br><span class="line">    lineTo(mBzEnd2.x, mBzEnd2.y)</span><br><span class="line">    lineTo(mTouch.x, mTouch.y)</span><br><span class="line">    lineTo(mBzEnd1.x, mBzEnd1.y)</span><br><span class="line">    close()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于Path2使用的是线段相连，所以比我们想要获得的黄色区域要多出一部分，而恰好Path2只有这部分不在Path1中，所以我们可以通过取Path1和Path2的并集求得黄色区域的范围</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">val</span> <span class="variable">matrix</span> <span class="operator">=</span> getSymmetricalMatrix(mCalcData.mBzControl1, mCalcData.mBzControl2)</span><br><span class="line">canvas.save()</span><br><span class="line">canvas.clipPath(mPath1)</span><br><span class="line">canvas.clipPath(mPath2, Region.Op.INTERSECT)</span><br><span class="line"><span class="comment">// 当前页面对称变换后的矩形会和背页区域有一定的空隙，故背页不绘制正常bg，只绘制文字，在此之前填充背景色</span></span><br><span class="line">canvas.drawColor(mBackPageColor)</span><br><span class="line">canvas.drawBitmap(curBitmapWithNormalBg, matrix, <span class="literal">null</span>)</span><br><span class="line">canvas.restore()</span><br></pre></td></tr></table></figure>
+<p>这里在绘制背页的时候需要注意两个点</p>
+<ol>
+<li>绘制文字的时候需要做关于eh的对称变化，这样才有背页的效果，我们需要做的是构造一个矩阵来实现，若点A1(X1,Y1)关于直线y&#x3D;kx+b成轴对称，则对应点A2（X2，Y2）的坐标为<br><img src="/images/bezier15.png"><br><img src="/images/bezier16.png"></li>
+</ol>
+<p>那么就可以求出对应的矩阵</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 关于两个control连线的对称矩阵</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> fun <span class="title function_">getSymmetricalMatrix</span><span class="params">(point1: PointF, point2: PointF)</span>: Matrix &#123;</span><br><span class="line">    <span class="type">val</span> <span class="variable">k</span> <span class="operator">=</span> (point1.y - point2.y) / (point1.x - point2.x)</span><br><span class="line">    <span class="type">val</span> <span class="variable">values</span> <span class="operator">=</span> FloatArray(<span class="number">9</span>)</span><br><span class="line">    values[<span class="number">0</span>] = -<span class="number">1</span> * (k * k - <span class="number">1</span>) / (k * k + <span class="number">1</span>)</span><br><span class="line">    values[<span class="number">1</span>] = <span class="number">2</span> * k / (k * k + <span class="number">1</span>)</span><br><span class="line">    values[<span class="number">3</span>] = values[<span class="number">1</span>]</span><br><span class="line">    values[<span class="number">4</span>] = -values[<span class="number">0</span>]</span><br><span class="line">    values[<span class="number">8</span>] = <span class="number">1f</span></span><br><span class="line"></span><br><span class="line">    <span class="type">val</span> <span class="variable">b</span> <span class="operator">=</span> point1.y - point1.x * k</span><br><span class="line">    values[<span class="number">2</span>] = -<span class="number">2</span> * k * b / (k * k + <span class="number">1</span>)</span><br><span class="line">    values[<span class="number">5</span>] = <span class="number">2</span> * b / (k * k + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="type">val</span> <span class="variable">matrix</span> <span class="operator">=</span> Matrix()</span><br><span class="line">    matrix.setValues(values)</span><br><span class="line">    <span class="keyword">return</span> matrix</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>由于背页使用了贝塞尔曲线进行平滑扩展，所以绘制的区域是比实际区域要大，在绘制背页的时候不能带背景图片，只能用纯色填充，不然会出现空白区域</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="XDMrWu 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>XDMrWu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2019/08/08/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/" title="贝塞尔曲线">http://example.com/2019/08/08/贝塞尔曲线/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/04/16/Android%E5%85%B1%E4%BA%AB%E5%85%83%E7%B4%A0%E5%8A%A8%E7%94%BB%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/" rel="prev" title="Android共享元素动画原理解析">
+                  <i class="fa fa-angle-left"></i> Android共享元素动画原理解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/09/18/%E5%85%B3%E4%BA%8EHprof%E7%9A%84%E6%96%B9%E6%96%B9%E9%9D%A2%E9%9D%A2/" rel="next" title="关于Hprof的方方面面">
+                  关于Hprof的方方面面 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">XDMrWu</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">171k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:36</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/XDMrWu" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
